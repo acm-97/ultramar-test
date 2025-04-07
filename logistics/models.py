@@ -16,7 +16,8 @@ class Vehicle(models.Model):
     make = models.CharField(max_length=50)
     model = models.CharField(max_length=50)
     weight = models.FloatField()
-    bookings = models.ManyToManyField(Booking, related_name="vehicles", null=True, blank=True)
+    booking = models.ForeignKey(Booking, on_delete=models.SET_NULL, null=True, blank=True
+)
 
     def __str__(self):
         return f"{self.make} {self.model} ({self.vin})"

@@ -1,16 +1,16 @@
 <div
     class="modal fade"
-    id="cu-booking-modal"
+    id="cu-vehicle-modal"
     tabindex="-1"
-    aria-labelledby="cu-booking-modal"
+    aria-labelledby="cu-vehicle-modal"
     aria-hidden="true"
   >
     <div class="modal-dialog">
       <div class="modal-content">
-        <form id="cu-booking-form">
+        <form id="cu-vehicle-form">
           <div class="modal-header">
             <h5 class="modal-title" id="cu-modal-title">
-              Create/Edit Booking
+              Create/Edit Vehicle
             </h5>
             <button
               type="button"
@@ -21,53 +21,44 @@
           </div>
           <div class="modal-body">
             {% csrf_token %}
-            <input type="hidden" id="modal-booking_id" />
+            <input type="hidden" id="modal-vehicle_id" />
             <div class="mb-3">
-              <label for="modal-booking_number" class="form-label"
-                >Booking Number</label
-              >
+              <label for="modal-vehicle_vin" class="form-label">Vehicle's VIN</label>
               <input
                 type="text"
                 class="form-control"
-                id="modal-booking_number"
+                id="modal-vehicle_vin"
               />
             </div>
             <div class="mb-3">
-              <label for="modal-loading_port" class="form-label"
-                >Loading Port</label
-              >
-              <input type="text" class="form-control" id="modal-loading_port" />
+              <label for="modal-vehicle_make" class="form-label">Vehicle's Make</label>
+              <input type="text" class="form-control" id="modal-vehicle_make" />
             </div>
             <div class="mb-3">
-              <label for="modal-discharge_port" class="form-label"
-                >Discharge Port</label
-              >
+              <label for="modal-vehicle_model" class="form-label">Vehicle's Model</label>
               <input
                 type="text"
                 class="form-control"
-                id="modal-discharge_port"
+                id="modal-vehicle_model"
               />
             </div>
             <div class="mb-3">
-              <label for="modal-ship_arrival_date" class="form-label"
-                >Ship Arrival Date</label
-              >
+              <label for="modal-vehicle_weight" class="form-label">Vehicle's Weight</label>
               <input
-                type="date"
+                type="text"
                 class="form-control"
-                id="modal-ship_arrival_date"
+                id="modal-vehicle_weight"
               />
             </div>
-            
+
             <div class="mb-3">
-              <label for="modal-ship_departure_date" class="form-label"
-                >Ship Departure Date</label
-              >
-              <input
-                type="date"
-                class="form-control"
-                id="modal-ship_departure_date"
-              />
+              <label for="modal-vehicle_booking" class="form-label">Vehicle's Bookings</label> 
+              <select class="form-select" aria-label="Default select example" id="modal-vehicle_booking">
+                <option selected>Select a booking</option>
+                {% for booking in bookings %}
+                  <option value="{{ booking.id }}">{{ booking.booking_number }}</option>
+                {% endfor %}
+              </select>
             </div>
           </div>
           <div class="modal-footer">

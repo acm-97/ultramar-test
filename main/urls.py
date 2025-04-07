@@ -18,15 +18,18 @@ from django.conf.urls.static import static
 from django.conf import settings
 from django.urls import path, include
 from .views import HomeView
-from logistics.views import BookingListCreate, BookingRetrieveUpdateDestroy
+from logistics.views import BookingListCreate, BookingRetrieveUpdateDestroy, VehicleListCreate, VehicleRetrieveUpdateDestroy
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("", HomeView.as_view(), name="HomeView"),
-    path('bookings/', include('logistics.urls')),
+    path('logistics/', include('logistics.urls'), name='logistics'),
     
     path('api/bookings/', BookingListCreate.as_view(), name='booking-list-create'),
     path('api/bookings/<int:pk>/', BookingRetrieveUpdateDestroy.as_view(), name='booking-update'),
+    
+    path('api/vehicles/', VehicleListCreate.as_view(), name='vehicle-list-create'),
+    path('api/vehicles/<int:pk>/', VehicleRetrieveUpdateDestroy.as_view(), name='vehicle-update'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
  
 

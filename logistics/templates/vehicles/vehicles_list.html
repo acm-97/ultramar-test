@@ -6,14 +6,14 @@
 <link rel="stylesheet" href="{% static 'css/bookings.css' %}" />
 {% endblock %} 
 
-{% block title %} Booking {% endblock %} 
+{% block title %} Vehicles {% endblock %} 
 
 {% block content %}
 <section class="container">
-  <h1>Booking Management</h1>
+  <h1>Vehicle Management</h1>
 
-   <!-- Booking statistics cards -->
-  {% include "bookings/booking_statistics.html" %}
+   <!-- Vehicle statistics cards -->
+  {% include "vehicles/vehicle_statistics.html" %}
 
   <div class="rounded p-4" style="background-color: white; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1)">
     <div
@@ -24,7 +24,7 @@
         <input
           class="form-control py-2 rounded-start rounded-0 border-end-0 border"
           type="text" name="q"
-          placeholder="Search by booking #..." 
+          placeholder="Search by vehicle #..." 
           value="{{ query }}"
           id="search-input"
         />
@@ -40,33 +40,30 @@
         </span>
       </div>
 
-      <div style="position: relative;">
-        {% include "bookings/bookings_actions.html" %}
-      </div>
+      <!-- Actions dropdown for vehicles table-->
+      {% include "vehicles/vehicles_actions.html" %}
     </div>
 
-    <div style="position: relative;">
-      <div class="table-container" style="overflow-x: auto; max-width: 100%;">
-        <table
-          id="booking-table"
-          class="table table-striped table-hover"
-          style="margin-bottom: 0 !important"
-        >
-          <thead>
-            <tr>
-              <th class="sticky-col first-col">Booking Number</th>
-              <th>Loading Port</th>
-              <th>Discharge Port</th>
-              <th>Ship Arrival Date</th>
-              <th>Ship Departure Date</th>
-              <th class="sticky-col last-col"></th>
-            </tr>
-          </thead>
-          <tbody id="booking-table-body">
-            
-          </tbody>
-        </table>
-      </div>
+    <div class="table-container">
+      <table
+        id="vehicle-table"
+        class="table table-striped table-hover"
+        style="margin-bottom: 0 !important"
+      >
+        <thead>
+          <tr>
+            <th class="sticky-col first-col">Vehicle's VIN</th>
+            <th>Vehicle's Make</th>
+            <th>Vehicle's Model</th>
+            <th>Vehicle's Weight</th>
+            <th>Bookings</th>
+            <th class="sticky-col last-col"></th>
+          </tr>
+        </thead>
+        <tbody id="vehicle-table-body">
+          
+        </tbody>
+      </table>
     </div>
 
     <div class="d-flex justify-content-end">
@@ -95,14 +92,14 @@
   </div>
 
   <!-- View Modal -->
-  {% include "bookings/booking_details.html" %}
+  {% include "vehicles/vehicle_details.html" %}
 
   <!-- Create/Edit Modal -->
-  {% include "bookings/create_edit_booking.html" %}
+  {% include "vehicles/create_edit_vehicle.html" %}
 
 </section>
 {% endblock %} 
 
 {% block extra_js %}
-<script src="{% static 'js/bookings.js' %}"></script>
+<script src="{% static 'js/vehicles.js' %}"></script>
 {% endblock %}

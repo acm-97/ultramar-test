@@ -24,29 +24,68 @@
   <body id="page-top">
     <nav id="main-header" class="navbar sticky-top bg-dark navbar-dark">
       <div class="container-fluid">
-        <a class="navbar-brand" href="#page-top">Liner APP</a>     
+        <a class="navbar-brand" href="#page-top">Liner APP</a>  
+        
+        <div class="d-none d-md-block" id="navbarResponsive">
+          <ul class="nav nav-pills">            
+            <li class="nav-item"><a class="nav-link {% if request.path == '/' %}active{% endif %}" href="/"><span style="color: #fff">Home</span></a></li>
+            <li class="nav-item"><a class="nav-link {% if '/logistics/bookings/' in request.path %}active{% endif %}" href="/logistics/bookings/"><span style="color: #fff">Bookings</span></a></li>
+            <li class="nav-item"><a class="nav-link {% if '/logistics/vehicles/' in request.path %}active{% endif %}" href="/logistics/vehicles/"><span style="color: #fff">Vehicles</span></a></li>
+          </ul>
+        </div>
 
-          <button class="navbar-toggler rounded d-flex align-items-center gap-2" type="button"
-            data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false"
-            aria-label="Toggle navigation">
-            <i class="fa fa-user"></i>
+        <div class="d-none d-md-block">
+          <div class="btn-group">
+            <button type="button" class="btn dropdown-toggle rounded d-flex align-items-center gap-2 rounded" data-bs-toggle="dropdown" aria-expanded="false" 
+            style="color: rgba(255, 255, 255, .55); border-color: rgba(255, 255, 255, .1)">
+              <i class="fa fa-user"></i>
+              <span style="color: #fff; font-size: 16px">
+                {% if request.user.is_authenticated %}
+                  {{ request.user }}
+                {% else %}
+                  Guest
+                {% endif %}
+              </span>
+            </button>
+            <ul class="dropdown-menu">
+              {% if request.user.is_authenticated %}
+                <li class="logout-btn"><a class="dropdown-item" href="{% url 'admin:logout'  %}" >Log Out</a></li>
+              {% else %}
+                <li ><a class="dropdown-item" href="{% url 'admin:login'  %}">Log In</a></li>
+              {% endif %}
+            </ul>
+          </div>
+        </div>
+
+
+        <button class="d-md-none navbar-toggler rounded d-flex align-items-center gap-2" type="button"
+          data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <i class="fa fa-user"></i>
+          <span style="color: #fff; font-size: 16px">
             {% if request.user.is_authenticated %}
-            <span style="color: #fff; font-size: 16px">{{ request.user }}</span>
+              {{ request.user }}
+            {% else %}
+              Guest
             {% endif %}
-          </button>
+          </span>
+        </button>
 
-        <div class="collapse navbar-collapse" id="navbarResponsive">
-          <ul class="navbar-nav ms-auto">            
+        <div class="d-md-none collapse navbar-collapse" id="navbarResponsive">
+          <ul class="navbar-nav ms-auto">       
+            <li class="nav-item"><a class="nav-link {% if request.path == '/' %}active{% endif %}" href="/"><span style="color: #fff">Home</span></a></li>
+            <li class="nav-item"><a class="nav-link {% if '/logistics/bookings/' in request.path %}active{% endif %}" href="/logistics/bookings/"><span style="color: #fff">Bookings</span></a></li>
+            <li class="nav-item"><a class="nav-link {% if '/logistics/vehicles/' in request.path %}active{% endif %}" href="/logistics/vehicles/"><span style="color: #fff">Vehicles</span></a></li>
+                 
           {% if request.user.is_authenticated %}
-          <li><a href="/"><span style="color: #fff">Home</span></a></li>
-          <li><a href="/bookings/"><span style="color: #fff">Bookings</span></a></li>
-          
-          <li class='logout-btn'><a href="{% url 'admin:logout'  %}" >Log Out</a></li> 
+            <li class='logout-btn'><a href="{% url 'admin:logout'  %}" >Log Out</a></li> 
           {% else %}
-          <li><a href="{% url 'admin:login'  %}">Log In</a></li>
+            <li><a href="{% url 'admin:login'  %}">Log In</a></li>
           {% endif %}
           </ul>
         </div>
+
       </div>
     </nav>
     <main class="container-fluid">
