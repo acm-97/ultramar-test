@@ -267,7 +267,7 @@ function exportBookingsXLS() {
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'bookings.xls';
+    a.download = 'bookings.xlsx';
     a.click();
   }).catch(err => console.error('Error:', err));
 }
@@ -285,3 +285,32 @@ function exportBookingsPDF() {
     a.click();
   }).catch(err => console.error('Error:', err));
 }
+
+document.getElementById('import-xls-form').addEventListener('submit', function (e) {
+  e.preventDefault();
+  const formData = new FormData();
+  formData.append('file', fileInput.files[0]);
+
+  fetch(`/api/bokking/import-xls/`, {
+    method: 'POST',
+    body: formData,
+    headers: {
+      'X-CSRFToken': csrftoken,
+    },
+  })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        showToast('Bokking imported successfully', 'success');
+        location.reload();
+      } else {
+        showToast(data.error, 'error');
+      }
+    }).catch(err => {
+      if (err.json) {
+        err.json().then(error => showToast(error.detail, type = 'error'));
+      } else {
+        console.error('Error:', err);
+      }
+    })
+});

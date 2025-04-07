@@ -248,7 +248,7 @@ function exportVehiclesXLS() {
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'vehicles.xls';
+    a.download = 'vehicles.xlsx';
     a.click();
   }).catch(err => console.error('Error:', err));
 }
@@ -266,3 +266,32 @@ function exportVehiclesPDF() {
     a.click();
   }).catch(err => console.error('Error:', err));
 }
+
+document.getElementById('import-xls-form').addEventListener('submit', function (e) {
+  e.preventDefault();
+  const formData = new FormData();
+  formData.append('file', fileInput.files[0]);
+
+  fetch(`/api/vehicles/import-xls/`, {
+    method: 'POST',
+    body: formData,
+    headers: {
+      'X-CSRFToken': csrftoken,
+    },
+  })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        showToast('Vehicles imported successfully', 'success');
+        location.reload();
+      } else {
+        showToast(data.error, 'error');
+      }
+    }).catch(err => {
+      if (err.json) {
+        err.json().then(error => showToast(error.detail, type = 'error'));
+      } else {
+        console.error('Error:', err);
+      }
+    })
+});

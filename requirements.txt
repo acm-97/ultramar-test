@@ -8,3 +8,4 @@ XlsxWriter==3.2.0  # https://github.com/jmcnamara/XlsxWriter
 djangorestframework==3.15.1  # https://github.com/encode/django-rest-framework
 xlwt==1.3.0  # https://github.com/python-excel/xlwt
 reportlab==4.3.1  # https://pypi.org/project/reportlab/
+openpyxl==3.1.2  # https://openpyxl.readthedocs.io/en/stable/

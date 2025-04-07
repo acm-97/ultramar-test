@@ -1,15 +1,19 @@
 from django.shortcuts import render
 from .models import Booking, Vehicle
 from .serializers import BookingSerializer, VehicleSerializer
-from rest_framework import generics, filters, views
+from rest_framework import generics, filters, views, status
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse, HttpResponse
-from .forms import BookingForm, VehicleForm
+from .forms import BookingForm, VehicleForm, UploadFileForm
 from django.core.paginator import Paginator
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.decorators import api_view, permission_classes
+from rest_framework.response import Response
 import xlwt
 from reportlab.pdfgen import canvas
+from openpyxl.utils.exceptions import InvalidFileException
+import openpyxl
+from zipfile import BadZipFile
 
 class BookingListCreate(generics.ListCreateAPIView):
   queryset = Booking.objects.all()
@@ -80,14 +84,14 @@ def delete_booking(request, pk):
     return JsonResponse({'success': True})
  
 class ExportBookingsXLS(views.APIView):
+    permission_classes = [IsAuthenticated]
     # Export bookings to XLS
-    @permission_classes([IsAuthenticated])
     def get(self, request):
         query = request.GET.get('search', '')
         bookings = Booking.objects.filter(booking_number__icontains=str(query)).values()
 
         response = HttpResponse(content_type='application/ms-excel')
-        response['Content-Disposition'] = 'attachment; filename="bookings.xls"'
+        response['Content-Disposition'] = 'attachment; filename="bookings.xlsx"'
 
         wb = xlwt.Workbook(encoding='utf-8')
         ws = wb.add_sheet('Bookings')
@@ -113,7 +117,7 @@ class ExportBookingsXLS(views.APIView):
         return response
       
 class ExportBookingsPDF(views.APIView):
-    @permission_classes([IsAuthenticated])
+    permission_classes = [IsAuthenticated]
     def get(self, request):
       query = request.GET.get('q', '')
       bookings = Booking.objects.filter(booking_number__icontains=str(query)).values()
@@ -137,6 +141,42 @@ class ExportBookingsPDF(views.APIView):
       p.showPage()
       p.save()
       return response
+    
+class ImportBookingsXLS(views.APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self, request):
+        file = request.FILES.get('file')
+
+        if not file:
+            return Response({'error': 'No file uploaded'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not file.name.endswith('.xlsx'):
+            return Response({'error': 'Only .xlsx files are supported'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            wb = openpyxl.load_workbook(file)
+            ws = wb.active
+
+            for row in ws.iter_rows(min_row=2):
+                vin = row[0].value
+                make = row[1].value
+                model = row[2].value
+                weight = row[3].value
+
+                if vin:  # You can also add other required field checks here
+                    Booking.objects.create(
+                        vin=vin,
+                        make=make,
+                        model=model,
+                        weight=weight,
+                    )
+
+            return Response({'success': True})
+
+        except (BadZipFile, InvalidFileException):
+            return Response({'error': 'Uploaded file is not a valid .xlsx file'}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 # VEHICLE VIEWS ---------------------------------------------------------------------------------
 class VehicleListCreate(generics.ListCreateAPIView):
@@ -209,14 +249,14 @@ def delete_vehicle(request, pk):
     return JsonResponse({'success': True})
  
 class ExportVehiclesXLS(views.APIView):
+    permission_classes = [IsAuthenticated]
     # Export vehicles to XLS
-    @permission_classes([IsAuthenticated])
     def get(self, request):
         query = request.GET.get('search', '')
         vehicles = Vehicle.objects.filter(vin__icontains=str(query)).values()
 
         response = HttpResponse(content_type='application/ms-excel')
-        response['Content-Disposition'] = 'attachment; filename="vehicles.xls"'
+        response['Content-Disposition'] = 'attachment; filename="vehicles.xlsx"'
 
         wb = xlwt.Workbook(encoding='utf-8')
         ws = wb.add_sheet('Vehicles')
@@ -242,7 +282,7 @@ class ExportVehiclesXLS(views.APIView):
         return response
       
 class ExportVehiclesPDF(views.APIView):
-    @permission_classes([IsAuthenticated])
+    permission_classes = [IsAuthenticated]
     def get(self, request):
       query = request.GET.get('q', '')
       vehicles = Vehicle.objects.filter(vin__icontains=str(query)).values()
@@ -266,3 +306,39 @@ class ExportVehiclesPDF(views.APIView):
       p.showPage()
       p.save()
       return response
+ 
+class ImportVehiclesXLS(views.APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self, request):
+        file = request.FILES.get('file')
+
+        if not file:
+            return Response({'error': 'No file uploaded'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not file.name.endswith('.xlsx'):
+            return Response({'error': 'Only .xlsx files are supported'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            wb = openpyxl.load_workbook(file)
+            ws = wb.active
+
+            for row in ws.iter_rows(min_row=2):
+                vin = row[0].value
+                make = row[1].value
+                model = row[2].value
+                weight = row[3].value
+
+                if vin:  # You can also add other required field checks here
+                    Vehicle.objects.create(
+                        vin=vin,
+                        make=make,
+                        model=model,
+                        weight=weight,
+                    )
+
+            return Response({'success': True})
+
+        except (BadZipFile, InvalidFileException):
+            return Response({'error': 'Uploaded file is not a valid .xlsx file'}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
