@@ -16,13 +16,17 @@ Including another URLconf
 from django.contrib import admin
 from django.conf.urls.static import static
 from django.conf import settings
-from django.urls import include
-from django.urls import path
+from django.urls import path, include
 from .views import HomeView
+from logistics.views import BookingListCreate, BookingRetrieveUpdateDestroy
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("", HomeView.as_view(), name="HomeView"),
+    path('bookings/', include('logistics.urls')),
+    
+    path('api/bookings/', BookingListCreate.as_view(), name='booking-list-create'),
+    path('api/bookings/<int:pk>/', BookingRetrieveUpdateDestroy.as_view(), name='booking-update'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
  
 

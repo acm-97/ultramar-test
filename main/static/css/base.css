@@ -1,0 +1,23 @@
+main {
+  height: 100dvh;
+}
+
+a {
+  text-decoration: none !important;
+}
+
+a:hover {
+  opacity: 0.8;
+}
+
+.logout-btn a {
+  color: red
+}
+
+.logout-btn a:hover {
+  padding: 3.5px 5px 3.5px 5px;
+  border-radius: 5px;
+  color: red;
+  background-color: rgba(255, 0, 0, 0.4);
+  opacity: 1 !important;
+}
