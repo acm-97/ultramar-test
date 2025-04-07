@@ -238,3 +238,31 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 });
+
+function exportVehiclesXLS() {
+  fetch(`/api/vehicles/export-xls/${getQueryString()}`, {
+    method: 'GET'
+  })
+  .then(response => response.blob())
+  .then(blob => {
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'vehicles.xls';
+    a.click();
+  }).catch(err => console.error('Error:', err));
+}
+
+function exportVehiclesPDF() {
+  fetch(`/api/vehicles/export-pdf/${getQueryString()}`, {
+    method: 'GET'
+  })
+  .then(response => response.blob())
+  .then(blob => {
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'vehicles.pdf';
+    a.click();
+  }).catch(err => console.error('Error:', err));
+}

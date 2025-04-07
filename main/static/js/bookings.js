@@ -257,3 +257,31 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 });
+
+function exportBookingsXLS() {
+  fetch(`/api/bookings/export-xls/${getQueryString()}`, {
+    method: 'GET'
+  })
+  .then(response => response.blob())
+  .then(blob => {
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'bookings.xls';
+    a.click();
+  }).catch(err => console.error('Error:', err));
+}
+
+function exportBookingsPDF() {
+  fetch(`/api/bookings/export-pdf/${getQueryString()}`, {
+    method: 'GET'
+  })
+  .then(response => response.blob())
+  .then(blob => {
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'bookings.pdf';
+    a.click();
+  }).catch(err => console.error('Error:', err));
+}

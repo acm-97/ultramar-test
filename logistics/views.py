@@ -1,13 +1,15 @@
 from django.shortcuts import render
 from .models import Booking, Vehicle
 from .serializers import BookingSerializer, VehicleSerializer
-from rest_framework import generics, filters
+from rest_framework import generics, filters, views
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from .forms import BookingForm, VehicleForm
 from django.core.paginator import Paginator
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.decorators import api_view, permission_classes
+import xlwt
+from reportlab.pdfgen import canvas
 
 class BookingListCreate(generics.ListCreateAPIView):
   queryset = Booking.objects.all()
@@ -76,7 +78,65 @@ def delete_booking(request, pk):
     booking = get_object_or_404(Booking, pk=pk)
     booking.delete()
     return JsonResponse({'success': True})
+ 
+class ExportBookingsXLS(views.APIView):
+    # Export bookings to XLS
+    @permission_classes([IsAuthenticated])
+    def get(self, request):
+        query = request.GET.get('search', '')
+        bookings = Booking.objects.filter(booking_number__icontains=str(query)).values()
+
+        response = HttpResponse(content_type='application/ms-excel')
+        response['Content-Disposition'] = 'attachment; filename="bookings.xls"'
+
+        wb = xlwt.Workbook(encoding='utf-8')
+        ws = wb.add_sheet('Bookings')
+
+        # Header
+        row_num = 0
+        columns = ['Booking Number', 'Loading Port', 'Discharge Port', 'Ship Arrival Date', 'Ship Departure Date']
+
+        for col_num, col_title in enumerate(columns):
+            ws.write(row_num, col_num, col_title)
+
+        # Data rows
+        for booking in bookings:
+            print(booking)
+            row_num += 1
+            ws.write(row_num, 0, booking.get('booking_number'))
+            ws.write(row_num, 1, booking.get('loading_port'))
+            ws.write(row_num, 2, booking.get('discharge_port'))
+            ws.write(row_num, 3, booking.get('ship_arrival_date'))
+            ws.write(row_num, 4, booking.get('ship_departure_date'))
+
+        wb.save(response)
+        return response
       
+class ExportBookingsPDF(views.APIView):
+    @permission_classes([IsAuthenticated])
+    def get(self, request):
+      query = request.GET.get('q', '')
+      bookings = Booking.objects.filter(booking_number__icontains=str(query)).values()
+
+      response = HttpResponse(content_type='application/pdf')
+      response['Content-Disposition'] = 'attachment; filename="bookings.pdf"'
+
+      p = canvas.Canvas(response)
+      y = 800
+      p.drawString(50, y, 'Booking List')
+      y -= 30
+
+      for booking in bookings:
+          line = f"{booking.get('booking_number')}   |   {booking.get('loading_port')}   |   {booking.get('discharge_port')}   |   ({booking.get('ship_arrival_date')})   |   ({booking.get('ship_departure_date')})"
+          p.drawString(50, y, line)
+          y -= 20
+          if y < 50:
+              p.showPage()
+              y = 800
+
+      p.showPage()
+      p.save()
+      return response
 
 # VEHICLE VIEWS ---------------------------------------------------------------------------------
 class VehicleListCreate(generics.ListCreateAPIView):
@@ -147,3 +207,62 @@ def delete_vehicle(request, pk):
     vehicle = get_object_or_404(Vehicle, pk=pk)
     vehicle.delete()
     return JsonResponse({'success': True})
+ 
+class ExportVehiclesXLS(views.APIView):
+    # Export vehicles to XLS
+    @permission_classes([IsAuthenticated])
+    def get(self, request):
+        query = request.GET.get('search', '')
+        vehicles = Vehicle.objects.filter(vin__icontains=str(query)).values()
+
+        response = HttpResponse(content_type='application/ms-excel')
+        response['Content-Disposition'] = 'attachment; filename="vehicles.xls"'
+
+        wb = xlwt.Workbook(encoding='utf-8')
+        ws = wb.add_sheet('Vehicles')
+
+        # Header
+        row_num = 0
+        columns = ['VIN', 'Make', 'Model', 'Weight', 'Booking']
+
+        for col_num, col_title in enumerate(columns):
+            ws.write(row_num, col_num, col_title)
+
+        # Data rows
+        for vehicle in vehicles:
+            print(vehicle)
+            row_num += 1
+            ws.write(row_num, 0, vehicle.get('vin'))
+            ws.write(row_num, 1, vehicle.get('make'))
+            ws.write(row_num, 2, vehicle.get('model'))
+            ws.write(row_num, 3, vehicle.get('weight'))
+            # ws.write(row_num, 4, vehicle.booking.booking_number)
+
+        wb.save(response)
+        return response
+      
+class ExportVehiclesPDF(views.APIView):
+    @permission_classes([IsAuthenticated])
+    def get(self, request):
+      query = request.GET.get('q', '')
+      vehicles = Vehicle.objects.filter(vin__icontains=str(query)).values()
+
+      response = HttpResponse(content_type='application/pdf')
+      response['Content-Disposition'] = 'attachment; filename="vehicles.pdf"'
+
+      p = canvas.Canvas(response)
+      y = 800
+      p.drawString(50, y, 'Vehicle List')
+      y -= 30
+
+      for vehicle in vehicles:
+          line = f"{vehicle.get('vin')}   |   {vehicle.get('make')}   |   {vehicle.get('model')}   |   ({vehicle.get('weight')})"
+          p.drawString(50, y, line)
+          y -= 20
+          if y < 50:
+              p.showPage()
+              y = 800
+
+      p.showPage()
+      p.save()
+      return response
