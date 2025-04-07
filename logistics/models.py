@@ -16,8 +16,7 @@ class Vehicle(models.Model):
     make = models.CharField(max_length=50)
     model = models.CharField(max_length=50)
     weight = models.FloatField()
-    booking = models.ForeignKey(Booking, on_delete=models.SET_NULL, null=True, blank=True
-)
+    booking_id = models.ForeignKey(Booking, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return f"{self.make} {self.model} ({self.vin})"

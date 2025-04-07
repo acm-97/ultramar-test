@@ -9,4 +9,4 @@ class BookingForm(forms.ModelForm):
 class VehicleForm(forms.ModelForm):
     class Meta:
         model = Vehicle
-        fields = ['vin', 'make', 'model', 'weight', 'booking']
+        fields = ['vin', 'make', 'model', 'weight', 'booking_id']

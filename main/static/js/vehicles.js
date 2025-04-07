@@ -32,7 +32,7 @@ document.getElementById('cu-vehicle-form').addEventListener('submit', function (
     data.append('make', vehicleMake);
     data.append('model', vehicleModel);
     data.append('weight', vehicleWeight);
-    data.append('booking', vehicleBooking);
+    data.append('booking_id', vehicleBooking);
     
     const method = vehicleID ? 'PATCH' : 'POST';
 

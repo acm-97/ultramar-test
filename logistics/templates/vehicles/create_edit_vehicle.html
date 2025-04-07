@@ -54,9 +54,9 @@
             <div class="mb-3">
               <label for="modal-vehicle_booking" class="form-label">Vehicle's Bookings</label> 
               <select class="form-select" aria-label="Default select example" id="modal-vehicle_booking">
-                <option selected>Select a booking</option>
+                <option value="" {% if booking.id == 0 %}selected{% endif %}>None</option>
                 {% for booking in bookings %}
-                  <option value="{{ booking.id }}">{{ booking.booking_number }}</option>
+                  <option value="{{ booking.id }}" {% if booking.id == vehicle.booking_id %}selected{% endif %}>{{ booking.booking_number }}</option>
                 {% endfor %}
               </select>
             </div>

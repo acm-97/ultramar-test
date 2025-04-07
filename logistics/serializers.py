@@ -8,7 +8,8 @@ class BookingSerializer(serializers.ModelSerializer):
 
 
 class VehicleSerializer(serializers.ModelSerializer):
-    booking = BookingSerializer()
+    # This will return the full Booking object
+    booking = BookingSerializer(read_only=True, source="booking_id")
     
     class Meta:
         model = Vehicle

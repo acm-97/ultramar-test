@@ -126,7 +126,7 @@ def create_vehicle(request):
     form = VehicleForm(request.POST)
     if form.is_valid():
         vehicle = form.save()
-        return JsonResponse({'id': vehicle.id, 'vin': vehicle.vin, 'make': vehicle.make, 'model': vehicle.model, 'weight': vehicle.weight, 'booking': vehicle.booking})
+        return JsonResponse({'id': vehicle.id, 'vin': vehicle.vin, 'make': vehicle.make, 'model': vehicle.model, 'weight': vehicle.weight, 'booking_id': vehicle.booking})
     return JsonResponse({'error': 'Invalid data'}, status=400)
 
 # Update a vehicle
@@ -136,8 +136,8 @@ def update_vehicle(request, pk):
     vehicle = get_object_or_404(Vehicle, pk=pk)
     form = VehicleForm(request.POST, instance=vehicle)
     if form.is_valid():
-        vehicle = form.save()
-        return JsonResponse({'id': vehicle.id, 'vin': vehicle.vin, 'make': vehicle.make, 'model': vehicle.model, 'weight': vehicle.weight, 'booking': vehicle.booking})
+        vehicle.save()
+        return JsonResponse({'id': vehicle.id, 'vin': vehicle.vin, 'make': vehicle.make, 'model': vehicle.model, 'weight': vehicle.weight, 'booking_id': vehicle.booking})
     return JsonResponse({'error': 'Invalid data'}, status=400)
 
 # Delete a vehicle
