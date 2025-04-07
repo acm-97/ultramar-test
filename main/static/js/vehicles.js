@@ -45,7 +45,13 @@ document.getElementById('cu-vehicle-form').addEventListener('submit', function (
     })
     .then(response => response.ok ? response.json() : Promise.reject(response))
     .then(() => location.reload())
-    .catch(err => console.error('Error:', err));
+    .catch(err => {
+      if (err.json) {
+          err.json().then(error => showToast(error.detail, type='error'));
+      } else {
+          console.error('Error:', err);
+      }
+  });
 });
 
 // logic for input search filter
@@ -152,7 +158,7 @@ function fetchAndRender() {
                   </tr>
                 `);
             }
-        });
+        }).catch(err => console.log(err));
 }
 
 searchInput.addEventListener('input', () => {
@@ -211,6 +217,13 @@ function openDeleteVehicleModal(id) {
   })
   .then(() => {
     fetchAndRender();
+  })
+  .catch(err => {
+      if (err.json) {
+          err.json().then(error => showToast(error.detail, type='error'));
+      } else {
+          console.error('Error:', err);
+      }
   });
 }
 
